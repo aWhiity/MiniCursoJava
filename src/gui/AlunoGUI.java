@@ -186,12 +186,45 @@ public class AlunoGUI extends JFrame {
 
 	public void cadastrarNovoAluno() {
 
-		
+		try {
+			Aluno aluno = new Aluno();
+			aluno.setRa(Integer.parseInt(this.txtRA.getText()));
+			aluno.setNome(this.txtNome.getText());
+			aluno.setCurso(this.txtCurso.getText());
+			
+			if(this.rbMasculino.isSelected()) {
+				aluno.setSexo("Masculino");
+			} else if(this.rbFeminino.isSelected()) {
+				aluno.setSexo("Feminino");
+			} else {
+				aluno.setSexo("Não Informado");
+			}
+			
+			AlunoService alunoService = new AlunoService();
+			alunoService.cadastrar(aluno);
+			
+			atualizarTabela();
+		} catch (SQLException | IOException e) {
+				JOptionPane.showMessageDialog(null, "Erro ao cadastrar!");
+		}
 	}
 	
 	public void atualizarTabela() {
 
-		
+		try {
+			AlunoService alunoService = new AlunoService();
+			List<Aluno> alunos = alunoService.buscarAlunos();
+			
+			DefaultTableModel modelo = (DefaultTableModel) tblAlunos.getModel();
+			modelo.fireTableDataChanged();
+			modelo.setRowCount(0);
+			for(Aluno aluno : alunos) {
+				modelo.addRow(new Object[] { aluno.getRa(), aluno.getNome(), aluno.getCurso(), aluno.getSexo() });
+			}
+			
+		} catch (SQLException | IOException e) {
+			JOptionPane.showMessageDialog(null, "Erro ao buscar!");
+		}
 	}
 	
 	public void atualizarCadastroAluno() {
@@ -201,7 +234,15 @@ public class AlunoGUI extends JFrame {
 	
 	public void excluirCadastroAluno() {
 		
-		
+		try {
+			int ra = Integer.parseInt(txtRA.getText());
+			AlunoService alunoService = new AlunoService();
+			alunoService.excluir(ra);			
+			
+			this.atualizarTabela();
+		} catch (SQLException | IOException e) {
+			JOptionPane.showMessageDialog(null, "Erro ao buscar!");
+		}
 	}
 	
 	public void limparCampos() {
